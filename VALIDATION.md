@@ -41,3 +41,11 @@ The published-artifact workflow downloads the release wheel, source archive, PDF
 ## Unavailable integrations and scope
 
 MySQL, HANA catalog discovery, TimescaleDB metadata, Jira pagination and InfluxDB transport have driver/HTTP contract tests, not live-service qualification. HANA execution is disabled. Paid OpenAI/Anthropic adapters use actual SDKs with mocked HTTP transports; no paid inference was performed. Unsupported behavior and incomplete discovery are detailed in [LIMITATIONS.md](LIMITATIONS.md) and the [backend maturity matrix](docs/maturity.md). This is an alpha release, not completion of every broad production capability in the original specification.
+
+## Post-publication verification
+
+[Exact published artifact verification](https://github.com/drcrael/nlquery/actions/runs/35483846331) passed **all six jobs**: Linux, Windows and macOS with Python 3.11 and 3.14. Each job downloaded the release assets, checked SHA256SUMS, and tested both the wheel and source distribution in fresh environments outside the checkout: **12 successful installations**, each with **238 passed and 4 optional live-service skips**, dependency checks, and the executable ecommerce example. The separate service gate covers those live-service skips.
+
+An independent download also verified all three asset checksums against the published manifest. The release remains tagged at `74e3f68`; this evidence update does not replace the verified release bytes.
+
+Tag creation triggered the obsolete one-time source-import workflow, which failed because its staging archive had already been consumed. This was a publication-helper failure, not a library or artifact-test failure. The importer was retired from main after publication; its history and the [failed helper run](https://github.com/drcrael/nlquery/actions/runs/35483846184) remain available. The regular validation, live-model evaluation and release-artifact workflows remain active.
