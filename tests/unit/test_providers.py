@@ -113,6 +113,8 @@ def test_ollama_transport(monkeypatch):
         data = json.loads(request.content)
         assert data["stream"] is False
         assert data["format"]["additionalProperties"] is False
+        assert json.dumps(data["format"]) in data["messages"][0]["content"]
+        assert data["messages"][-1] == MESSAGES[-1]
         return httpx.Response(200, json={"message": {"content": '{"sources":["items"]}'}})
 
     monkeypatch.setattr(
