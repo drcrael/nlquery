@@ -14,6 +14,13 @@ jobs:
           python-version: '3.12'
       - run: python -m pip install -e ".[ollama]"
       - run: curl -fsSL https://ollama.com/install.sh | sh
+      - name: Wait for local model server
+        run: |
+          for attempt in $(seq 1 60); do
+            if curl -fsS http://127.0.0.1:11434/api/tags >/dev/null; then exit 0; fi
+            sleep 1
+          done
+          exit 1
       - run: ollama pull qwen2.5:7b
       - run: python scripts/live_model.py
       - uses: actions/upload-artifact@v4
