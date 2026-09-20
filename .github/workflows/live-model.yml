@@ -16,6 +16,9 @@ jobs:
       - run: curl -fsSL https://ollama.com/install.sh | sh
       - name: Wait for local model server
         run: |
+          if ! curl -fsS http://127.0.0.1:11434/api/tags >/dev/null 2>&1; then
+            OLLAMA_HOST=127.0.0.1:11434 nohup ollama serve >"$RUNNER_TEMP/ollama.log" 2>&1 &
+          fi
           for attempt in $(seq 1 60); do
             if curl -fsS http://127.0.0.1:11434/api/tags >/dev/null; then exit 0; fi
             sleep 1
