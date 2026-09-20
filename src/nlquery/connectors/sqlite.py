@@ -39,9 +39,15 @@ class SQLiteConnector:
 
     def _connect(self) -> sqlite3.Connection:
         conn = sqlite3.connect(self._path.as_uri() + "?mode=ro", uri=True)
-        conn.execute("PRAGMA query_only = ON")
-        conn.enable_load_extension(False)
-        return conn
+        try:
+            conn.execute("PRAGMA query_only = ON")
+            # Some Python builds omit extension loading entirely.
+            if hasattr(conn, "enable_load_extension"):
+                conn.enable_load_extension(False)
+            return conn
+        except Exception:
+            conn.close()
+            raise
 
     def discover(self) -> SchemaModel:
         conn = None

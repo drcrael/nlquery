@@ -1,6 +1,7 @@
 """Executable end-to-end acceptance scenario with an explicit mock interpreter."""
 
 import sqlite3
+from contextlib import closing
 from datetime import UTC, datetime
 from pathlib import Path
 from tempfile import TemporaryDirectory
@@ -16,7 +17,7 @@ QUESTION = "Show the ten customers with the highest revenue during the previous 
 def run() -> dict[str, object]:
     with TemporaryDirectory() as directory:
         path = Path(directory) / "ecommerce.db"
-        with sqlite3.connect(path) as db:
+        with closing(sqlite3.connect(path)) as db, db:
             db.executescript("""
             CREATE TABLE customers (customer_id INTEGER PRIMARY KEY, name TEXT NOT NULL);
             CREATE TABLE orders (order_id INTEGER PRIMARY KEY,customer_id INTEGER REFERENCES customers(customer_id),total_amount REAL,order_date TIMESTAMP,status TEXT);

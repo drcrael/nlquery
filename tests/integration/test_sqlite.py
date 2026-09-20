@@ -1,4 +1,5 @@
 import sqlite3
+from contextlib import closing
 from datetime import UTC, datetime
 
 import pytest
@@ -13,7 +14,7 @@ from nlquery.llm.mock import MockProvider
 @pytest.fixture
 def client(tmp_path):
     path = tmp_path / "sales.db"
-    with sqlite3.connect(path) as db:
+    with closing(sqlite3.connect(path)) as db, db:
         db.executescript(
             "CREATE TABLE orders (customer TEXT, amount REAL, status TEXT, created TIMESTAMP); INSERT INTO orders VALUES ('A',100,'paid','2026-04-05T00:00:00+00:00'),('A',50,'paid','2026-05-05T00:00:00+00:00'),('B',300,'cancelled','2026-05-05T00:00:00+00:00'),('B',20,'paid','2026-01-05T00:00:00+00:00');"
         )
@@ -70,3 +71,27 @@ def test_no_llm(client):
         QueryIntent(sources=["orders"], projections=[Projection(field="customer")], distinct=True)
     )
     assert client.execute(q).row_count == 2
+
+
+def test_sqlite_without_extension_loading(client, monkeypatch):
+    original = sqlite3.connect
+
+    class NoExtensions:
+        def __init__(self, *args, **kwargs):
+            self.connection = original(*args, **kwargs)
+
+        def __getattr__(self, name):
+            if name == "enable_load_extension":
+                raise AttributeError(name)
+            return getattr(self.connection, name)
+
+    monkeypatch.setattr(sqlite3, "connect", NoExtensions)
+    assert client.connector.discover().sources
+    query = client.compile(QueryIntent(sources=["orders"], limit=2))
+    assert client.execute(query).row_count == 2
+    connection = client.connector._connect()
+    try:
+        with pytest.raises(sqlite3.OperationalError):
+            connection.execute("DELETE FROM orders")
+    finally:
+        connection.close()

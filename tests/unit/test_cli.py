@@ -1,6 +1,7 @@
 import json
 import runpy
 import sqlite3
+from contextlib import closing
 from pathlib import Path
 
 import pytest
@@ -13,7 +14,7 @@ from nlquery.exceptions import ConfigurationError
 @pytest.fixture
 def db(tmp_path):
     path = tmp_path / "data.db"
-    with sqlite3.connect(path) as c:
+    with closing(sqlite3.connect(path)) as c, c:
         c.executescript("CREATE TABLE items (name TEXT);INSERT INTO items VALUES ('A');")
     return path
 
