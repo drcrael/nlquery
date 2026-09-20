@@ -1,0 +1,115 @@
+{
+  "provider": "ollama:qwen2.5:7b",
+  "cases": [
+    {
+      "question": "Show the names of the five items with amount greater than 10, sorted by amount descending.",
+      "actual_intent": {
+        "operation": "select",
+        "sources": [
+          "items"
+        ],
+        "projections": [
+          {
+            "field": "name",
+            "alias": null
+          }
+        ],
+        "dimensions": [],
+        "metrics": [],
+        "filters": [
+          {
+            "field": "amount",
+            "operator": ">",
+            "value": 10
+          }
+        ],
+        "predicate": null,
+        "sort": [
+          {
+            "field": "amount",
+            "direction": "desc"
+          }
+        ],
+        "limit": 5,
+        "offset": 0,
+        "distinct": false,
+        "joins": [],
+        "traversal": null,
+        "window": null,
+        "unwind": [],
+        "calculations": [],
+        "unresolved": [],
+        "ambiguities": [],
+        "backend_hints": []
+      },
+      "metrics": {
+        "source_accuracy": true,
+        "field_accuracy": true,
+        "filter_accuracy": true,
+        "aggregation_accuracy": true,
+        "relationship_accuracy": true,
+        "time_accuracy": true,
+        "ambiguity_detection": true,
+        "exact_intent_match": true
+      },
+      "canonical_match": true,
+      "execution_match": true,
+      "passed": true
+    },
+    {
+      "question": "List item names where amount exceeds ten. Sort by amount from largest to smallest and return at most five.",
+      "actual_intent": {
+        "operation": "select",
+        "sources": [
+          "items"
+        ],
+        "projections": [
+          {
+            "field": "name",
+            "alias": null
+          }
+        ],
+        "dimensions": [],
+        "metrics": [],
+        "filters": [
+          {
+            "field": "amount",
+            "operator": ">",
+            "value": 10
+          }
+        ],
+        "predicate": null,
+        "sort": [
+          {
+            "field": "amount",
+            "direction": "desc"
+          }
+        ],
+        "limit": 5,
+        "offset": 0,
+        "distinct": false,
+        "joins": [],
+        "traversal": null,
+        "window": null,
+        "unwind": [],
+        "calculations": [],
+        "unresolved": [],
+        "ambiguities": [],
+        "backend_hints": []
+      },
+      "metrics": {
+        "source_accuracy": true,
+        "field_accuracy": true,
+        "filter_accuracy": true,
+        "aggregation_accuracy": true,
+        "relationship_accuracy": true,
+        "time_accuracy": true,
+        "ambiguity_detection": true,
+        "exact_intent_match": true
+      },
+      "canonical_match": true,
+      "execution_match": true,
+      "passed": true
+    }
+  ]
+}
