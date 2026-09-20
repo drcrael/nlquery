@@ -1,0 +1,40 @@
+name: Import validated source
+on:
+  workflow_dispatch:
+  push:
+    paths: [nlquery-source.zip, .github/workflows/import.yml]
+permissions:
+  contents: write
+jobs:
+  import:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Verify and unpack exact validated source
+        run: |
+          python - <<'PY'
+          import hashlib, pathlib, zipfile
+          archive = pathlib.Path('nlquery-source.zip')
+          assert hashlib.sha256(archive.read_bytes()).hexdigest() == 'aa0a1cc30be708eac0958318a585748f366e64cecfd4b84dbec494a31f6c152d'
+          with zipfile.ZipFile(archive) as z:
+              assert all(not pathlib.PurePosixPath(n).is_absolute() and '..' not in pathlib.PurePosixPath(n).parts and not n.startswith('.github/') for n in z.namelist())
+              z.extractall('.')
+          archive.unlink()
+          PY
+      - run: python -m pip install -e ".[dev,postgres,neo4j,mongo,redis,mysql,openai,anthropic,yaml]"
+      - run: ruff check .
+      - run: ruff format --check .
+      - run: mypy src
+      - run: pytest --cov=nlquery
+      - run: python -m build
+      - run: python -m pip check
+      - name: Commit tested source tree
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          git commit -m 'Import tested NLQuery alpha implementation, corpus and user manual'
+          git push origin HEAD:main
