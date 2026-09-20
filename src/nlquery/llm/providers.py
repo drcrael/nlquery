@@ -1,5 +1,6 @@
 """Lazy SDK adapters with bounded network requests and no raw error propagation."""
 
+import json
 import os
 from typing import Any, Literal, cast
 
@@ -126,12 +127,24 @@ class OllamaProvider:
             with httpx.Client(
                 timeout=self.timeout, follow_redirects=False, trust_env=False
             ) as client:
+                schema = response_model.model_json_schema()
+                instructions = (
+                    "Required response JSON schema: "
+                    + json.dumps(schema)
+                    + "\nUse the schema to interpret each output property. "
+                    "Keep unused fields at their defaults. backend_hints is reserved; leave it empty."
+                )
+                grounded = [dict(message) for message in messages]
+                if grounded and grounded[0]["role"] == "system":
+                    grounded[0]["content"] += "\n" + instructions
+                else:
+                    grounded.insert(0, {"role": "system", "content": instructions})
                 response = client.post(
                     self._url + "/api/chat",
                     json={
                         "model": self.model,
-                        "messages": messages,
-                        "format": response_model.model_json_schema(),
+                        "messages": grounded,
+                        "format": schema,
                         "stream": False,
                         "options": {"temperature": 0, "num_ctx": 16384},
                     },
