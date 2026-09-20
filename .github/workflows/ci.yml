@@ -1,0 +1,73 @@
+name: Validation
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  portable:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        python: ['3.11', '3.14']
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+      - run: python -m pip install -e ".[dev,postgres,neo4j,mongo,redis,mysql,openai,anthropic,yaml]"
+      - run: ruff check .
+      - run: ruff format --check .
+      - run: mypy src
+      - run: pytest --cov=nlquery --cov-report=xml
+      - run: python -m build
+      - run: python -m pip check
+      - uses: actions/upload-artifact@v4
+        with:
+          name: distributions-${{ matrix.os }}-${{ matrix.python }}
+          path: dist/*
+  services:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_PASSWORD: synthetic-test-password
+          POSTGRES_DB: nlquery_test
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 5s --health-timeout 5s --health-retries 20
+      mongo:
+        image: mongo:8
+        ports: ['27017:27017']
+      redis:
+        image: redis:7
+        ports: ['6379:6379']
+      neo4j:
+        image: neo4j:5-community
+        env:
+          NEO4J_AUTH: neo4j/synthetic-test-password
+        ports: ['7687:7687', '7474:7474']
+    env:
+      NLQUERY_TEST_POSTGRES: postgresql://postgres:synthetic-test-password@localhost:5432/nlquery_test
+      NLQUERY_TEST_MONGO: mongodb://localhost:27017
+      NLQUERY_TEST_REDIS: redis://localhost:6379
+      NLQUERY_TEST_NEO4J: bolt://localhost:7687
+      NLQUERY_TEST_NEO4J_PASSWORD: synthetic-test-password
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install -e ".[dev,postgres,neo4j,mongo,redis,mysql,openai,anthropic,yaml]"
+      - run: python scripts/wait_services.py
+      - run: pytest --cov=nlquery --cov-report=xml
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: service-coverage
+          path: coverage.xml
