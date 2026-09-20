@@ -34,14 +34,14 @@ cases = [
         ),
     ),
 ]
-report = {"provider": "ollama:qwen2.5:3b", "cases": []}
+report = {"provider": "ollama:qwen2.5:7b", "cases": []}
 with TemporaryDirectory() as directory:
     path = Path(directory) / "items.db"
     with closing(sqlite3.connect(path)) as db, db:
         db.executescript(
             "CREATE TABLE items(name TEXT,amount INTEGER);INSERT INTO items VALUES ('A',10),('B',20),('C',30);"
         )
-    client = NLQuery(SQLiteConnector(path), llm=OllamaProvider("qwen2.5:3b", timeout=900))
+    client = NLQuery(SQLiteConnector(path), llm=OllamaProvider("qwen2.5:7b", timeout=900))
     for question, expected in cases:
         row = {"question": question}
         try:
