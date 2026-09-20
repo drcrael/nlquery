@@ -1,0 +1,41 @@
+{
+  "sources": [
+    {
+      "name": "records",
+      "fields": [
+        {
+          "name": "name",
+          "data_type": "string"
+        },
+        {
+          "name": "amount",
+          "data_type": "number"
+        },
+        {
+          "name": "status",
+          "data_type": "string"
+        },
+        {
+          "name": "created",
+          "data_type": "datetime"
+        },
+        {
+          "name": "active",
+          "data_type": "boolean"
+        },
+        {
+          "name": "category",
+          "data_type": "string"
+        },
+        {
+          "name": "profile.city",
+          "data_type": "string"
+        },
+        {
+          "name": "tags",
+          "data_type": "array"
+        }
+      ]
+    }
+  ]
+}

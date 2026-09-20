@@ -1,0 +1,56 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "nlquery"
+version = "0.1.0a1"
+description = "Typed natural-language interpretation with deterministic, governed query compilation"
+requires-python = ">=3.11"
+readme = "README.md"
+license = "MIT"
+dependencies = ["pydantic>=2.10,<3"]
+
+[project.optional-dependencies]
+postgres = ["psycopg[binary]>=3.2,<4"]
+mysql = ["pymysql>=1.1,<2"]
+neo4j = ["neo4j>=5.26,<7"]
+mongo = ["pymongo>=4.10,<5"]
+redis = ["redis>=5,<8"]
+influx = ["httpx>=0.28,<1"]
+hana = ["hdbcli>=2.23"]
+jira = ["httpx>=0.28,<1"]
+openai = ["openai>=2,<3"]
+anthropic = ["anthropic>=0.60,<1"]
+ollama = ["httpx>=0.28,<1"]
+yaml = ["PyYAML>=6,<7"]
+all = ["nlquery[postgres,mysql,neo4j,mongo,redis,influx,hana,jira,openai,anthropic,ollama,yaml]"]
+dev = ["pytest>=8,<10", "pytest-cov>=6", "hypothesis>=6", "ruff>=0.12", "mypy>=1.15", "build", "httpx>=0.28,<1", "types-PyYAML"]
+
+[project.scripts]
+nlquery = "nlquery.cli.main:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+[tool.setuptools.package-data]
+nlquery = ["py.typed"]
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+markers = ["integration: live backend tests", "security: trust boundary tests"]
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+[tool.ruff.lint]
+select = ["E4", "E7", "E9", "F", "I", "B", "UP"]
+[tool.mypy]
+python_version = "3.11"
+check_untyped_defs = true
+disallow_untyped_defs = true
+[[tool.mypy.overrides]]
+module = ["psycopg", "openai", "anthropic", "pymysql", "neo4j", "pymongo", "redis", "hdbcli", "psycopg.*", "pymysql.*", "neo4j.*", "pymongo.*", "redis.*", "hdbcli.*", "openai.*", "anthropic.*"]
+ignore_missing_imports = true
+[tool.coverage.run]
+source = ["nlquery"]
+[tool.coverage.report]
+show_missing = true
+fail_under = 85

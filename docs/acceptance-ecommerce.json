@@ -1,0 +1,1027 @@
+{
+  "compiled": {
+    "backend": "sqlite",
+    "language": "sql",
+    "query": "SELECT \"customers\".\"name\", SUM(\"orders\".\"total_amount\") AS \"total_revenue\" FROM \"orders\" AS \"orders\" INNER JOIN \"customers\" AS \"customers\" ON \"orders\".\"customer_id\" = \"customers\".\"customer_id\" WHERE ((\"orders\".\"order_date\" >= :p0 AND \"orders\".\"order_date\" < :p1) AND \"orders\".\"status\" != :p2) GROUP BY \"customers\".\"name\" ORDER BY \"total_revenue\" DESC LIMIT :p3",
+    "parameters": {
+      "p0": "2026-04-01T00:00:00+00:00",
+      "p1": "2026-07-01T00:00:00+00:00",
+      "p2": "cancelled",
+      "p3": 10
+    },
+    "plan": {
+      "ir": {
+        "operation": "aggregate",
+        "sources": [
+          "orders",
+          "customers"
+        ],
+        "projections": [],
+        "dimensions": [
+          "customers.name"
+        ],
+        "metrics": [
+          {
+            "field": "orders.total_amount",
+            "aggregation": "sum",
+            "alias": "total_revenue"
+          }
+        ],
+        "filters": [],
+        "predicate": {
+          "operator": "and",
+          "terms": [
+            {
+              "operator": "and",
+              "terms": [
+                {
+                  "field": "orders.order_date",
+                  "operator": ">=",
+                  "value": "2026-04-01T00:00:00+00:00"
+                },
+                {
+                  "field": "orders.order_date",
+                  "operator": "<",
+                  "value": "2026-07-01T00:00:00+00:00"
+                }
+              ]
+            },
+            {
+              "field": "orders.status",
+              "operator": "!=",
+              "value": "cancelled"
+            }
+          ]
+        },
+        "sort": [
+          {
+            "field": "total_revenue",
+            "direction": "desc"
+          }
+        ],
+        "limit": 10,
+        "offset": 0,
+        "distinct": false,
+        "joins": [
+          {
+            "relationship": "orders_customers_0",
+            "kind": "inner"
+          }
+        ],
+        "traversal": null,
+        "window": null,
+        "unwind": [],
+        "calculations": [],
+        "unresolved": [],
+        "ambiguities": [],
+        "backend_hints": []
+      },
+      "nodes": [
+        {
+          "operation": "Scan",
+          "provenance": [
+            {
+              "subject": "orders",
+              "selected": "orders",
+              "evidence": "exact_schema_name",
+              "stage": "grounding"
+            },
+            {
+              "subject": "customers",
+              "selected": "customers",
+              "evidence": "exact_schema_name",
+              "stage": "grounding"
+            },
+            {
+              "subject": "customers.name",
+              "selected": "customers.name",
+              "evidence": "exact_schema_name",
+              "stage": "grounding"
+            },
+            {
+              "subject": "revenue",
+              "selected": "orders.total_amount",
+              "evidence": "semantic_catalog",
+              "stage": "grounding"
+            },
+            {
+              "subject": "sum",
+              "selected": "orders.total_amount",
+              "evidence": "aggregation_type_compatibility",
+              "stage": "grounding"
+            },
+            {
+              "subject": "order_date",
+              "selected": "orders.order_date",
+              "evidence": "exact_schema_name",
+              "stage": "grounding"
+            },
+            {
+              "subject": "previous_quarter",
+              "selected": "[2026-04-01T00:00:00+00:00, 2026-07-01T00:00:00+00:00)",
+              "evidence": "calendar_resolution",
+              "stage": "grounding"
+            },
+            {
+              "subject": "status",
+              "selected": "orders.status",
+              "evidence": "exact_schema_name",
+              "stage": "grounding"
+            },
+            {
+              "subject": "!=",
+              "selected": "orders.status",
+              "evidence": "type_compatibility",
+              "stage": "grounding"
+            },
+            {
+              "subject": "orders.customer_id",
+              "selected": "orders.customer_id",
+              "evidence": "exact_schema_name",
+              "stage": "grounding"
+            },
+            {
+              "subject": "customers.customer_id",
+              "selected": "customers.customer_id",
+              "evidence": "exact_schema_name",
+              "stage": "grounding"
+            },
+            {
+              "subject": "orders_customers_0",
+              "selected": "orders -> customers",
+              "evidence": "declared_relationship",
+              "stage": "grounding"
+            },
+            {
+              "subject": "aggregate",
+              "selected": "aggregate",
+              "evidence": "capability_validation",
+              "stage": "grounding"
+            }
+          ]
+        },
+        {
+          "operation": "Join",
+          "provenance": [
+            {
+              "subject": "orders",
+              "selected": "orders",
+              "evidence": "exact_schema_name",
+              "stage": "grounding"
+            },
+            {
+              "subject": "customers",
+              "selected": "customers",
+              "evidence": "exact_schema_name",
+              "stage": "grounding"
+            },
+            {
+              "subject": "customers.name",
+              "selected": "customers.name",
+              "evidence": "exact_schema_name",
+              "stage": "grounding"
+            },
+            {
+              "subject": "revenue",
+              "selected": "orders.total_amount",
+              "evidence": "semantic_catalog",
+              "stage": "grounding"
+            },
+            {
+              "subject": "sum",
+              "selected": "orders.total_amount",
+              "evidence": "aggregation_type_compatibility",
+              "stage": "grounding"
+            },
+            {
+              "subject": "order_date",
+              "selected": "orders.order_date",
+              "evidence": "exact_schema_name",
+              "stage": "grounding"
+            },
+            {
+              "subject": "previous_quarter",
+              "selected": "[2026-04-01T00:00:00+00:00, 2026-07-01T00:00:00+00:00)",
+              "evidence": "calendar_resolution",
+              "stage": "grounding"
+            },
+            {
+              "subject": "status",
+              "selected": "orders.status",
+              "evidence": "exact_schema_name",
+              "stage": "grounding"
+            },
+            {
+              "subject": "!=",
+              "selected": "orders.status",
+              "evidence": "type_compatibility",
+              "stage": "grounding"
+            },
+            {
+              "subject": "orders.customer_id",
+              "selected": "orders.customer_id",
+              "evidence": "exact_schema_name",
+              "stage": "grounding"
+            },
+            {
+              "subject": "customers.customer_id",
+              "selected": "customers.customer_id",
+              "evidence": "exact_schema_name",
+              "stage": "grounding"
+            },
+            {
+              "subject": "orders_customers_0",
+              "selected": "orders -> customers",
+              "evidence": "declared_relationship",
+              "stage": "grounding"
+            },
+            {
+              "subject": "aggregate",
+              "selected": "aggregate",
+              "evidence": "capability_validation",
+              "stage": "grounding"
+            }
+          ]
+        },
+        {
+          "operation": "Filter",
+          "provenance": [
+            {
+              "subject": "orders",
+              "selected": "orders",
+              "evidence": "exact_schema_name",
+              "stage": "grounding"
+            },
+            {
+              "subject": "customers",
+              "selected": "customers",
+              "evidence": "exact_schema_name",
+              "stage": "grounding"
+            },
+            {
+              "subject": "customers.name",
+              "selected": "customers.name",
+              "evidence": "exact_schema_name",
+              "stage": "grounding"
+            },
+            {
+              "subject": "revenue",
+              "selected": "orders.total_amount",
+              "evidence": "semantic_catalog",
+              "stage": "grounding"
+            },
+            {
+              "subject": "sum",
+              "selected": "orders.total_amount",
+              "evidence": "aggregation_type_compatibility",
+              "stage": "grounding"
+            },
+            {
+              "subject": "order_date",
+              "selected": "orders.order_date",
+              "evidence": "exact_schema_name",
+              "stage": "grounding"
+            },
+            {
+              "subject": "previous_quarter",
+              "selected": "[2026-04-01T00:00:00+00:00, 2026-07-01T00:00:00+00:00)",
+              "evidence": "calendar_resolution",
+              "stage": "grounding"
+            },
+            {
+              "subject": "status",
+              "selected": "orders.status",
+              "evidence": "exact_schema_name",
+              "stage": "grounding"
+            },
+            {
+              "subject": "!=",
+              "selected": "orders.status",
+              "evidence": "type_compatibility",
+              "stage": "grounding"
+            },
+            {
+              "subject": "orders.customer_id",
+              "selected": "orders.customer_id",
+              "evidence": "exact_schema_name",
+              "stage": "grounding"
+            },
+            {
+              "subject": "customers.customer_id",
+              "selected": "customers.customer_id",
+              "evidence": "exact_schema_name",
+              "stage": "grounding"
+            },
+            {
+              "subject": "orders_customers_0",
+              "selected": "orders -> customers",
+              "evidence": "declared_relationship",
+              "stage": "grounding"
+            },
+            {
+              "subject": "aggregate",
+              "selected": "aggregate",
+              "evidence": "capability_validation",
+              "stage": "grounding"
+            }
+          ]
+        },
+        {
+          "operation": "Aggregate",
+          "provenance": [
+            {
+              "subject": "orders",
+              "selected": "orders",
+              "evidence": "exact_schema_name",
+              "stage": "grounding"
+            },
+            {
+              "subject": "customers",
+              "selected": "customers",
+              "evidence": "exact_schema_name",
+              "stage": "grounding"
+            },
+            {
+              "subject": "customers.name",
+              "selected": "customers.name",
+              "evidence": "exact_schema_name",
+              "stage": "grounding"
+            },
+            {
+              "subject": "revenue",
+              "selected": "orders.total_amount",
+              "evidence": "semantic_catalog",
+              "stage": "grounding"
+            },
+            {
+              "subject": "sum",
+              "selected": "orders.total_amount",
+              "evidence": "aggregation_type_compatibility",
+              "stage": "grounding"
+            },
+            {
+              "subject": "order_date",
+              "selected": "orders.order_date",
+              "evidence": "exact_schema_name",
+              "stage": "grounding"
+            },
+            {
+              "subject": "previous_quarter",
+              "selected": "[2026-04-01T00:00:00+00:00, 2026-07-01T00:00:00+00:00)",
+              "evidence": "calendar_resolution",
+              "stage": "grounding"
+            },
+            {
+              "subject": "status",
+              "selected": "orders.status",
+              "evidence": "exact_schema_name",
+              "stage": "grounding"
+            },
+            {
+              "subject": "!=",
+              "selected": "orders.status",
+              "evidence": "type_compatibility",
+              "stage": "grounding"
+            },
+            {
+              "subject": "orders.customer_id",
+              "selected": "orders.customer_id",
+              "evidence": "exact_schema_name",
+              "stage": "grounding"
+            },
+            {
+              "subject": "customers.customer_id",
+              "selected": "customers.customer_id",
+              "evidence": "exact_schema_name",
+              "stage": "grounding"
+            },
+            {
+              "subject": "orders_customers_0",
+              "selected": "orders -> customers",
+              "evidence": "declared_relationship",
+              "stage": "grounding"
+            },
+            {
+              "subject": "aggregate",
+              "selected": "aggregate",
+              "evidence": "capability_validation",
+              "stage": "grounding"
+            }
+          ]
+        },
+        {
+          "operation": "Sort",
+          "provenance": [
+            {
+              "subject": "orders",
+              "selected": "orders",
+              "evidence": "exact_schema_name",
+              "stage": "grounding"
+            },
+            {
+              "subject": "customers",
+              "selected": "customers",
+              "evidence": "exact_schema_name",
+              "stage": "grounding"
+            },
+            {
+              "subject": "customers.name",
+              "selected": "customers.name",
+              "evidence": "exact_schema_name",
+              "stage": "grounding"
+            },
+            {
+              "subject": "revenue",
+              "selected": "orders.total_amount",
+              "evidence": "semantic_catalog",
+              "stage": "grounding"
+            },
+            {
+              "subject": "sum",
+              "selected": "orders.total_amount",
+              "evidence": "aggregation_type_compatibility",
+              "stage": "grounding"
+            },
+            {
+              "subject": "order_date",
+              "selected": "orders.order_date",
+              "evidence": "exact_schema_name",
+              "stage": "grounding"
+            },
+            {
+              "subject": "previous_quarter",
+              "selected": "[2026-04-01T00:00:00+00:00, 2026-07-01T00:00:00+00:00)",
+              "evidence": "calendar_resolution",
+              "stage": "grounding"
+            },
+            {
+              "subject": "status",
+              "selected": "orders.status",
+              "evidence": "exact_schema_name",
+              "stage": "grounding"
+            },
+            {
+              "subject": "!=",
+              "selected": "orders.status",
+              "evidence": "type_compatibility",
+              "stage": "grounding"
+            },
+            {
+              "subject": "orders.customer_id",
+              "selected": "orders.customer_id",
+              "evidence": "exact_schema_name",
+              "stage": "grounding"
+            },
+            {
+              "subject": "customers.customer_id",
+              "selected": "customers.customer_id",
+              "evidence": "exact_schema_name",
+              "stage": "grounding"
+            },
+            {
+              "subject": "orders_customers_0",
+              "selected": "orders -> customers",
+              "evidence": "declared_relationship",
+              "stage": "grounding"
+            },
+            {
+              "subject": "aggregate",
+              "selected": "aggregate",
+              "evidence": "capability_validation",
+              "stage": "grounding"
+            }
+          ]
+        },
+        {
+          "operation": "Limit",
+          "provenance": [
+            {
+              "subject": "orders",
+              "selected": "orders",
+              "evidence": "exact_schema_name",
+              "stage": "grounding"
+            },
+            {
+              "subject": "customers",
+              "selected": "customers",
+              "evidence": "exact_schema_name",
+              "stage": "grounding"
+            },
+            {
+              "subject": "customers.name",
+              "selected": "customers.name",
+              "evidence": "exact_schema_name",
+              "stage": "grounding"
+            },
+            {
+              "subject": "revenue",
+              "selected": "orders.total_amount",
+              "evidence": "semantic_catalog",
+              "stage": "grounding"
+            },
+            {
+              "subject": "sum",
+              "selected": "orders.total_amount",
+              "evidence": "aggregation_type_compatibility",
+              "stage": "grounding"
+            },
+            {
+              "subject": "order_date",
+              "selected": "orders.order_date",
+              "evidence": "exact_schema_name",
+              "stage": "grounding"
+            },
+            {
+              "subject": "previous_quarter",
+              "selected": "[2026-04-01T00:00:00+00:00, 2026-07-01T00:00:00+00:00)",
+              "evidence": "calendar_resolution",
+              "stage": "grounding"
+            },
+            {
+              "subject": "status",
+              "selected": "orders.status",
+              "evidence": "exact_schema_name",
+              "stage": "grounding"
+            },
+            {
+              "subject": "!=",
+              "selected": "orders.status",
+              "evidence": "type_compatibility",
+              "stage": "grounding"
+            },
+            {
+              "subject": "orders.customer_id",
+              "selected": "orders.customer_id",
+              "evidence": "exact_schema_name",
+              "stage": "grounding"
+            },
+            {
+              "subject": "customers.customer_id",
+              "selected": "customers.customer_id",
+              "evidence": "exact_schema_name",
+              "stage": "grounding"
+            },
+            {
+              "subject": "orders_customers_0",
+              "selected": "orders -> customers",
+              "evidence": "declared_relationship",
+              "stage": "grounding"
+            },
+            {
+              "subject": "aggregate",
+              "selected": "aggregate",
+              "evidence": "capability_validation",
+              "stage": "grounding"
+            }
+          ]
+        }
+      ],
+      "confidence": {
+        "overall": 1.0,
+        "components": [
+          {
+            "category": "source_selection",
+            "subject": "orders",
+            "selected": "orders",
+            "confidence": 1.0,
+            "evidence": [
+              "exact_schema_name"
+            ]
+          },
+          {
+            "category": "source_selection",
+            "subject": "customers",
+            "selected": "customers",
+            "confidence": 1.0,
+            "evidence": [
+              "exact_schema_name"
+            ]
+          },
+          {
+            "category": "field_selection",
+            "subject": "customers.name",
+            "selected": "customers.name",
+            "confidence": 1.0,
+            "evidence": [
+              "exact_schema_name"
+            ]
+          },
+          {
+            "category": "field_selection",
+            "subject": "revenue",
+            "selected": "orders.total_amount",
+            "confidence": 1.0,
+            "evidence": [
+              "semantic_catalog"
+            ]
+          },
+          {
+            "category": "aggregation_interpretation",
+            "subject": "sum",
+            "selected": "orders.total_amount",
+            "confidence": 1.0,
+            "evidence": [
+              "aggregation_type_compatibility"
+            ]
+          },
+          {
+            "category": "field_selection",
+            "subject": "order_date",
+            "selected": "orders.order_date",
+            "confidence": 1.0,
+            "evidence": [
+              "exact_schema_name"
+            ]
+          },
+          {
+            "category": "time_interpretation",
+            "subject": "previous_quarter",
+            "selected": "[2026-04-01T00:00:00+00:00, 2026-07-01T00:00:00+00:00)",
+            "confidence": 1.0,
+            "evidence": [
+              "calendar_resolution"
+            ]
+          },
+          {
+            "category": "field_selection",
+            "subject": "status",
+            "selected": "orders.status",
+            "confidence": 1.0,
+            "evidence": [
+              "exact_schema_name"
+            ]
+          },
+          {
+            "category": "filter_interpretation",
+            "subject": "!=",
+            "selected": "orders.status",
+            "confidence": 1.0,
+            "evidence": [
+              "type_compatibility"
+            ]
+          },
+          {
+            "category": "field_selection",
+            "subject": "orders.customer_id",
+            "selected": "orders.customer_id",
+            "confidence": 1.0,
+            "evidence": [
+              "exact_schema_name"
+            ]
+          },
+          {
+            "category": "field_selection",
+            "subject": "customers.customer_id",
+            "selected": "customers.customer_id",
+            "confidence": 1.0,
+            "evidence": [
+              "exact_schema_name"
+            ]
+          },
+          {
+            "category": "join_selection",
+            "subject": "orders_customers_0",
+            "selected": "orders -> customers",
+            "confidence": 1.0,
+            "evidence": [
+              "declared_relationship"
+            ]
+          },
+          {
+            "category": "intent_classification",
+            "subject": "aggregate",
+            "selected": "aggregate",
+            "confidence": 1.0,
+            "evidence": [
+              "capability_validation"
+            ]
+          }
+        ],
+        "unresolved": []
+      },
+      "provenance": [
+        {
+          "subject": "orders",
+          "selected": "orders",
+          "evidence": "exact_schema_name",
+          "stage": "grounding"
+        },
+        {
+          "subject": "customers",
+          "selected": "customers",
+          "evidence": "exact_schema_name",
+          "stage": "grounding"
+        },
+        {
+          "subject": "customers.name",
+          "selected": "customers.name",
+          "evidence": "exact_schema_name",
+          "stage": "grounding"
+        },
+        {
+          "subject": "revenue",
+          "selected": "orders.total_amount",
+          "evidence": "semantic_catalog",
+          "stage": "grounding"
+        },
+        {
+          "subject": "sum",
+          "selected": "orders.total_amount",
+          "evidence": "aggregation_type_compatibility",
+          "stage": "grounding"
+        },
+        {
+          "subject": "order_date",
+          "selected": "orders.order_date",
+          "evidence": "exact_schema_name",
+          "stage": "grounding"
+        },
+        {
+          "subject": "previous_quarter",
+          "selected": "[2026-04-01T00:00:00+00:00, 2026-07-01T00:00:00+00:00)",
+          "evidence": "calendar_resolution",
+          "stage": "grounding"
+        },
+        {
+          "subject": "status",
+          "selected": "orders.status",
+          "evidence": "exact_schema_name",
+          "stage": "grounding"
+        },
+        {
+          "subject": "!=",
+          "selected": "orders.status",
+          "evidence": "type_compatibility",
+          "stage": "grounding"
+        },
+        {
+          "subject": "orders.customer_id",
+          "selected": "orders.customer_id",
+          "evidence": "exact_schema_name",
+          "stage": "grounding"
+        },
+        {
+          "subject": "customers.customer_id",
+          "selected": "customers.customer_id",
+          "evidence": "exact_schema_name",
+          "stage": "grounding"
+        },
+        {
+          "subject": "orders_customers_0",
+          "selected": "orders -> customers",
+          "evidence": "declared_relationship",
+          "stage": "grounding"
+        },
+        {
+          "subject": "aggregate",
+          "selected": "aggregate",
+          "evidence": "capability_validation",
+          "stage": "grounding"
+        }
+      ],
+      "reference_time": "2026-07-01T00:00:00+00:00"
+    },
+    "explanation": "Scan \u2192 Join \u2192 Filter \u2192 Aggregate \u2192 Sort \u2192 Limit",
+    "warnings": [
+      "Join cost depends on indexes and cardinality"
+    ],
+    "referenced_objects": [
+      "orders",
+      "customers"
+    ],
+    "risk": {
+      "level": "medium",
+      "reasons": [
+        "Join cost depends on indexes and cardinality"
+      ]
+    },
+    "confidence": {
+      "overall": 1.0,
+      "components": [
+        {
+          "category": "source_selection",
+          "subject": "orders",
+          "selected": "orders",
+          "confidence": 1.0,
+          "evidence": [
+            "exact_schema_name"
+          ]
+        },
+        {
+          "category": "source_selection",
+          "subject": "customers",
+          "selected": "customers",
+          "confidence": 1.0,
+          "evidence": [
+            "exact_schema_name"
+          ]
+        },
+        {
+          "category": "field_selection",
+          "subject": "customers.name",
+          "selected": "customers.name",
+          "confidence": 1.0,
+          "evidence": [
+            "exact_schema_name"
+          ]
+        },
+        {
+          "category": "field_selection",
+          "subject": "revenue",
+          "selected": "orders.total_amount",
+          "confidence": 1.0,
+          "evidence": [
+            "semantic_catalog"
+          ]
+        },
+        {
+          "category": "aggregation_interpretation",
+          "subject": "sum",
+          "selected": "orders.total_amount",
+          "confidence": 1.0,
+          "evidence": [
+            "aggregation_type_compatibility"
+          ]
+        },
+        {
+          "category": "field_selection",
+          "subject": "order_date",
+          "selected": "orders.order_date",
+          "confidence": 1.0,
+          "evidence": [
+            "exact_schema_name"
+          ]
+        },
+        {
+          "category": "time_interpretation",
+          "subject": "previous_quarter",
+          "selected": "[2026-04-01T00:00:00+00:00, 2026-07-01T00:00:00+00:00)",
+          "confidence": 1.0,
+          "evidence": [
+            "calendar_resolution"
+          ]
+        },
+        {
+          "category": "field_selection",
+          "subject": "status",
+          "selected": "orders.status",
+          "confidence": 1.0,
+          "evidence": [
+            "exact_schema_name"
+          ]
+        },
+        {
+          "category": "filter_interpretation",
+          "subject": "!=",
+          "selected": "orders.status",
+          "confidence": 1.0,
+          "evidence": [
+            "type_compatibility"
+          ]
+        },
+        {
+          "category": "field_selection",
+          "subject": "orders.customer_id",
+          "selected": "orders.customer_id",
+          "confidence": 1.0,
+          "evidence": [
+            "exact_schema_name"
+          ]
+        },
+        {
+          "category": "field_selection",
+          "subject": "customers.customer_id",
+          "selected": "customers.customer_id",
+          "confidence": 1.0,
+          "evidence": [
+            "exact_schema_name"
+          ]
+        },
+        {
+          "category": "join_selection",
+          "subject": "orders_customers_0",
+          "selected": "orders -> customers",
+          "confidence": 1.0,
+          "evidence": [
+            "declared_relationship"
+          ]
+        },
+        {
+          "category": "intent_classification",
+          "subject": "aggregate",
+          "selected": "aggregate",
+          "confidence": 1.0,
+          "evidence": [
+            "capability_validation"
+          ]
+        }
+      ],
+      "unresolved": []
+    },
+    "provenance": [
+      {
+        "subject": "orders",
+        "selected": "orders",
+        "evidence": "exact_schema_name",
+        "stage": "grounding"
+      },
+      {
+        "subject": "customers",
+        "selected": "customers",
+        "evidence": "exact_schema_name",
+        "stage": "grounding"
+      },
+      {
+        "subject": "customers.name",
+        "selected": "customers.name",
+        "evidence": "exact_schema_name",
+        "stage": "grounding"
+      },
+      {
+        "subject": "revenue",
+        "selected": "orders.total_amount",
+        "evidence": "semantic_catalog",
+        "stage": "grounding"
+      },
+      {
+        "subject": "sum",
+        "selected": "orders.total_amount",
+        "evidence": "aggregation_type_compatibility",
+        "stage": "grounding"
+      },
+      {
+        "subject": "order_date",
+        "selected": "orders.order_date",
+        "evidence": "exact_schema_name",
+        "stage": "grounding"
+      },
+      {
+        "subject": "previous_quarter",
+        "selected": "[2026-04-01T00:00:00+00:00, 2026-07-01T00:00:00+00:00)",
+        "evidence": "calendar_resolution",
+        "stage": "grounding"
+      },
+      {
+        "subject": "status",
+        "selected": "orders.status",
+        "evidence": "exact_schema_name",
+        "stage": "grounding"
+      },
+      {
+        "subject": "!=",
+        "selected": "orders.status",
+        "evidence": "type_compatibility",
+        "stage": "grounding"
+      },
+      {
+        "subject": "orders.customer_id",
+        "selected": "orders.customer_id",
+        "evidence": "exact_schema_name",
+        "stage": "grounding"
+      },
+      {
+        "subject": "customers.customer_id",
+        "selected": "customers.customer_id",
+        "evidence": "exact_schema_name",
+        "stage": "grounding"
+      },
+      {
+        "subject": "orders_customers_0",
+        "selected": "orders -> customers",
+        "evidence": "declared_relationship",
+        "stage": "grounding"
+      },
+      {
+        "subject": "aggregate",
+        "selected": "aggregate",
+        "evidence": "capability_validation",
+        "stage": "grounding"
+      }
+    ]
+  },
+  "result": {
+    "kind": "tabular",
+    "columns": [
+      "name",
+      "total_revenue"
+    ],
+    "rows": [
+      {
+        "name": "Harbor Books",
+        "total_revenue": 200.0
+      },
+      {
+        "name": "Maple Market",
+        "total_revenue": 50.0
+      }
+    ],
+    "row_count": 2,
+    "backend": "sqlite",
+    "execution_time_ms": 1.768410999829939,
+    "truncated": false,
+    "metadata": {
+      "limit_reached": false
+    }
+  },
+  "interpreter": "deterministic mock; not a model accuracy claim"
+}
